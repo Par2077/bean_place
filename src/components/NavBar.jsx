@@ -29,6 +29,10 @@
 // Import the Button UI component from "./ui/Button"
 
 /* --- YOUR IMPORTS GO HERE --- */
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import logo from "../assets/Beans_logo.png";
+import Button from "./ui/Button";
 
 // STEP 2: Create and export the NavBar component
 // export default function NavBar() { ... }
@@ -81,3 +85,155 @@
 //   Inside: nav links + Button, each calling closeMenu onClick
 
 /* --- YOUR COMPONENT CODE GOES HERE --- */
+
+export default function NavBar({ toggleCart, theme, onToggleTheme }) {
+    const [menuOpen, setMenuOpen] = useState(false);
+    // container = menuOpen, function to update the container = setMenuOpen, current value = false //
+    const [scrolled, setScrolled] = useState(false);
+    const closeMenu = () => setMenuOpen(false);
+
+    useEffect(() => {
+        const handleScroll = () => setScrolled(window.scrollY > 20);
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
+    return(
+
+        <motion.header
+            className={`navbar ${scrolled ? "navbar-scrolled" : ""}`}
+            initial={{ y: -100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+        >
+            <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-3 md:px-8">
+                {/* Brand */}
+                <a href="#home" className="brand">
+                    <img 
+                    src={logo} 
+                    alt="Beans Place Logo" 
+                    className="logo h-12 w-auto md:h-14" 
+                    />
+                </a>
+
+                {/* Desktop Nav */}
+                <nav className="nav-links hidden items-center gap-10 md:flex">
+                    <a href="#home">Home</a>
+                    <a href="#shop">Shop Coffee</a>
+                    <a href="#about">Our Story</a>
+                    <a href="#contact">Contact</a>
+                </nav>
+
+                {/* Desktop CTA */}
+                <div className="hidden items-center gap-3 md:flex">
+                    <button
+                        type="button"
+                        aria-label={
+                            theme === "dark" ? "switch to light mode" : "switch to dark mode"
+                        }
+                        onClick={onToggleTheme}
+                        className="theme-toggle-button"
+                    >
+                        {theme === "dark" ? "☀️" : "🌙"}
+                    </button>
+                    <Button variant="accent" size="sm" onClick={toggleCart}>
+                        Order Now
+                    </Button>
+                </div>
+
+                {/* Mobile Hamburger */}
+                <button
+                    type="button"
+                    aria-label={menuOpen ? "Close Menu" : "Open Menu"}
+                    aria-expanded={menuOpen}
+                    onClick={() => setMenuOpen((open) => !open)}
+                    className="relative z-50 flex h-10 w-10 flex-col items-center justify-center gap-1.5 md:hidden"
+                >
+                    <span
+                        className={`block h-0.5 w-6 rounded-full bg-black transition-all duration-300 ${
+                            menuOpen ? "translate-y-2 rotate-45" : ""
+                        }`}
+                    />
+                    <span
+                        className={`block h-0.5 w-6 rounded-full bg-black transition-all duration-300 ${
+                            menuOpen ? "opacity-0" : "opacity-100"
+                        }`}
+                    />
+                    <span
+                        className={`block h-0.5 w-6 rounded-full bg-black transition-all duration-300 ${
+                            menuOpen ? "-translate-y-2 -rotate-45" : ""
+                        }`}
+                    />
+                </button>
+            </div>
+
+            <AnimatePresence>
+                {menuOpen && (
+                    <motion.div
+                        className="overflow-hidden md:hidden"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3, ease: "easeInOut"}}
+                        
+                    >
+                        <nav className="flex flex-col gap-4 px-6 pb-6 pt-2">
+                            <a 
+                            href="#home" 
+                            onClick={closeMenu}
+                            className="text-lg font-semibold"
+                            >
+                            Home
+                            </a>
+                             <a 
+                            href="#shop" 
+                            onClick={closeMenu}
+                            className="text-lg font-semibold"
+                            >
+                            Shop Coffee
+                            </a>
+                            <a 
+                            href="#about" 
+                            onClick={closeMenu}
+                            className="text-lg font-semibold"
+                            >
+                            Our Story
+                            </a>
+                            <a 
+                            href="#contact" 
+                            onClick={closeMenu}
+                            className="text-lg font-semibold"
+                            >
+                            Contact
+                            </a>
+                            <Button
+                               type="button"
+                               aria-label={
+                                theme === "dark"
+                                ? "switch to light mode"
+                                : "switch to dark mode"
+                               }
+                               onClick={onToggleTheme}  
+                               className="theme-toggle-button w-full justify-center"
+                               >
+                                {theme === "dark" ? "switch to light mode" : "switch to dark mode"}
+                            </Button>
+
+                            <button
+                                varient="accent"
+                                size="sm"
+                                className="mt-2 w-full"
+                                onClick={() => {
+                                    toggleCart();
+                                    closeMenu();
+                                }}
+                            >
+                                Order Now
+                            </button>
+                        </nav>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </motion.header>
+    );
+}
