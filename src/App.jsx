@@ -32,6 +32,8 @@
 import { useMemo, useState, useEffect } from "react";
 
 import NavBar from "./components/NavBar";
+import HeroSection from "./components/HeroSection"; 
+import RibbonTicker from "./components/RibbonTicker";
 // STEP 2: Create and export the App component
 // Use: export default function App() { ... }
 //
@@ -129,11 +131,12 @@ export default function App() {
             {/* HERO */}
             <section className="hero bg-hero">
                 <div className="hero-grid">
-
+                    <HeroSection />
                  </div> 
             </section>    
 
             {/* RIBBON TICKER */}
+                <RibbonTicker />
 
             {/* FEATURES */}
             <section className="features bg-features" id="shop">
