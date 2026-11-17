@@ -32,9 +32,22 @@
 import { useMemo, useState, useEffect } from "react";
 
 import NavBar from "./components/NavBar";
-import HeroSection from "./components/HeroSection"; 
+import HeroSection from "./components/HeroSection";
 import RibbonTicker from "./components/RibbonTicker";
 import FeaturesSection from "./components/FeaturesSection";
+import ProductShowcase from "./components/ProductShowcase";
+import ShoppingCart from "./components/ShoppingCart";
+import CtaSection from "./components/CtaSection";
+import AboutSection from "./components/AboutSection";
+import ContactSection from "./components/ContactSection";
+import FootSection from "./components/FooterSection";
+
+import imgEthiopianHarrar from "./assets/Ethiopian-Harrar-Bag.png";
+import imgColombianSupremo from "./assets/Colombian-Supremo-Bag.png";
+import imgKenyaAA from "./assets/Kenya-AA-Bag.png";
+import imgPanamaGeisha from "./assets/Panama-Geisha.png";
+import imgKona from "./assets/Kona-Bag.png";
+import imgGuatemalaAntigua from "./assets/Guatemala-Antigua-Bag.png";
 // STEP 2: Create and export the App component
 // Use: export default function App() { ... }
 //
@@ -60,6 +73,69 @@ import FeaturesSection from "./components/FeaturesSection";
 /* --- YOUR COMPONENT CODE GOES HERE --- */
 
 // imports go below here
+const productCatalog =[
+    {
+        id: 1,
+        name: "Ethiopian Harrar",
+        origin: "Ethiopia",
+        price: 18.99,
+        roast: "Medium",
+        notes: "Blueberry, dark chocolate, wine",
+        image: imgEthiopianHarrar,
+        badge: "Best Seller"
+    },
+      {
+        id: 2,
+        name: "Colombian Supremo",
+        origin: "Colombia",
+        price: 16.99,
+        roast: "Medium Dark",
+        notes: "Caramel, nutty smooth finish",
+        image: imgColombianSupremo,
+        badge: null
+    },
+      {
+        id: 3,
+        name: "Kenya AA",
+        origin: "Kenya",
+        price: 21.99,
+        roast: "Light",
+        notes: "Bright citrus, black currant, floral",
+        image: imgKenyaAA,
+        badge: "Staff Pick"
+    },
+      {
+        id: 4,
+        name: "Panama Geisha",
+        origin: "Panama",
+        price: 34.99,
+        roast: "Light",
+        notes: "Jasmine, bergamot, tropical fruit",
+        image: imgPanamaGeisha,
+        badge: "Limited"
+    },
+      {
+        id: 5,
+        name: "Kona",
+        origin: "Hawaii",
+        price: 29.99,
+        roast: "Medium",
+        notes: "Brown sugar, macadamia, mild acidity",
+        image: imgKona,
+        badge: null
+    },
+      {
+        id: 6,
+        name: "Guatemala Antigua",
+        origin: "Guatemala",
+        price: 17.99,
+        roast: "Dark",
+        notes: "Cocoa, spice, smoky sweetness",
+        image: imgGuatemalaAntigua,
+        badge: "New"
+    }
+];
+
 
 export default function App() {
     const [cartOpen, setCartOpen] = useState(false);
@@ -68,11 +144,11 @@ export default function App() {
         if (typeof window === "undefined") return "light";
         const savedTheme = window.localStorage.getItem("theme");
         if (savedTheme === "light" || savedTheme === "dark") return savedTheme;
-        return window.matchMedia("(prefers-color-scheme: dark)").matches ?
-        "dark" 
+        return window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
         : "light";
     });
-       
+
     useEffect(() => {
         document.documentElement.classList.toggle("dark", theme === "dark");
         window.localStorage.setItem("theme", theme);
@@ -82,28 +158,26 @@ export default function App() {
 
     const addToCart = (product) => {
         setCartItems((current) => {
-            const existing =current.find((item) => item.id === product.id);
+            const existing = current.find((item) => item.id === product.id);
             if (existing) {
                 return current.map((item) => 
-                    item.id === product.id 
-                    ? { ...item, qty: item.qty + 1 } 
-                    : item
+                  item.id === product.id ? { ...item, qty: item.qty + 1 } : item,  
                 );
             }
-                return [...current, { ...product, qty: 1 }];
-            
+
+            return [...current, { ...product, qty: 1 }];
         });
-    }
+    };
 
     const updateCartQty = (id, delta) => {
         setCartItems((current) => 
             current
-                .map((item) =>
-                item.id === id
-            ? { ...item, qty: Math.max(0, item.qty + delta)}
-                :item,
-            )
-            .filter((item) => item.qty > 0),
+                .map((item) => 
+                    item.id === id
+                    ? { ...item, qty: Math.max(0, item.qty + delta)}
+                    : item,
+                )
+                .filter((item) => item.qty > 0),
         );
     };
 
@@ -113,62 +187,69 @@ export default function App() {
 
     const cartCount = useMemo(
         () => cartItems.reduce((sum, item) => sum + item.qty, 0),
-        [cartItems]
+        [cartItems],
     );
 
     return(
         <div className="app">
             {/* SHOPPING CART */}
+            <ShoppingCart 
+                isOpen={cartOpen}
+                onToggleCart={toggleCart}
+                items={cartItems}
+                updateQty={updateCartQty}
+                removeItem={removeFromCart}
+            />
 
             {/* NAVBAR */}
-        <NavBar 
-            toggleCart={toggleCart}
-            cartCount={cartCount}
-            theme={theme}
-            onToggleTheme={() => 
-                setTheme((current) => (current === "light" ? "dark" : "light"))
-            }
-        />
+            <NavBar 
+                toggleCart={toggleCart}
+                cartCount={cartCount}
+                theme={theme}
+                onToggleTheme={() => 
+                    setTheme((current) => (current === "light" ? "dark" : "light"))
+                }
+            />
+
             {/* HERO */}
             <section className="hero bg-hero">
                 <div className="hero-grid">
                     <HeroSection />
-                 </div> 
-            </section>    
+                </div>
+            </section>
 
             {/* RIBBON TICKER */}
                 <RibbonTicker />
-
-            {/* FEATURES */}
+                
+            {/* FEATURES / CAROUSEL */}
             <section className="features bg-features" id="shop">
                 <FeaturesSection />
-                </section>
+            </section>
 
             {/* PRODUCT SHOWCASE */}
             <section className="bg-cta">
-                
+                <ProductShowcase products={productCatalog} addToCart={addToCart} />
             </section>
 
             {/* CTA */}
             <section className="bg-cta">
-
+                <CtaSection />
             </section>
 
             {/* ABOUT */}
             <section className="bg-cta" id="about">
-
+                <AboutSection />
             </section>
 
             {/* CONTACT */}
             <section className="bg-cta" id="contact">
-
-             </section>
+                <ContactSection />
+            </section>
 
             {/* FOOTER */}
-        <section className="bg-footer">
-
-        </section>   
-
+            <section className="bg-footer">
+                <FootSection />
+            </section>
         </div>
     );
 }
